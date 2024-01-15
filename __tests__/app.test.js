@@ -3,6 +3,7 @@ const app = require("../app.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const testData = require("../db/data/test-data/index.js");
+const endpointsTest = require('../endpoints.json')
 
 afterAll(() => db.end());
 
@@ -35,8 +36,17 @@ describe("GET api/topics", () => {
         })
   });
 
-  // describe('/api', ()=> {
-  //   test('provides an object with a description of all available endpoints')
-
-  // })
+describe('/api', () => {
+      test('provides an object with a description of all available endpoints', () => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then((res) => {
+          //console.log(res.body)
+          //console.log(res, '<<<')
+          expect(res.body).toEqual(endpointsTest)
+        })
+      })
+    })
+   
   
