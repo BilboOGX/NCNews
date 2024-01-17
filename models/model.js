@@ -36,3 +36,17 @@ exports.sortArticles = (sort_by = 'created_at', order = 'desc') => {
         return rows.rows
     })
 }
+
+exports.sortComments = (article_id, sort_by = 'created_at', order = 'desc') => {
+        let query = `
+        SELECT
+        comment_id, votes, created_at, author, body, article_id
+        FROM comments 
+        WHERE article_id = $1
+        ORDER BY ${sort_by} ${order}`
+            
+        return db.query(query, [article_id]).then((rows) => {
+            return rows.rows
+        })
+    }
+

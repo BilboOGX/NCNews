@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { getTopics, getEndPoints, getArticleID, articleCommentCount } = require('./controllers/controller')
+const { getTopics, getEndPoints, getArticleID, articleCommentCount, getArticleComments} = require('./controllers/controller')
 
 app.use(express.json());
 
@@ -11,6 +11,8 @@ app.get('/api', getEndPoints)
 app.get('/api/articles/:article_id', getArticleID)
 
 app.get('/api/articles', articleCommentCount)
+
+app.get('/api/articles/:article_id/comments', getArticleComments)
 
 app.all('*', (req, res) => {res.status(404).send({msg: 'URL not found'})})
 
@@ -29,8 +31,6 @@ app.use((err, req, res, next) => {
         next(err)
     }
 })
-
-
 
 
 

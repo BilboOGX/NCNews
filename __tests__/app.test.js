@@ -136,9 +136,52 @@ describe('/GET /api/articles', () => {
         expect(article.body).hasOwnProperty('article_img_url');
         expect(article.body).not.hasOwnProperty('body')
         expect(article.body).hasOwnProperty('number_of_comments')
-        console.log(article.number_of_comments)
         expect(typeof article.number_of_comments).toBe('string')
       })
     })
   })
 })
+
+describe('/api/articles/:article_id/comments', () => {
+  test('GET /api/articles/:article_id/comments responds with an array of comments for the given article_id ', () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then((res) => {
+      expect(Array.isArray(res.body)).toBe(true)
+      expect(res.body.length).not.toBe(0)
+      res.body.forEach((comments) => {
+        expect(comments.body).hasOwnProperty('comment_id');
+        expect(comments.body).hasOwnProperty('votes');
+        expect(comments.body).hasOwnProperty('created_at');
+        expect(comments.body).hasOwnProperty('author');
+        expect(comments.body).hasOwnProperty('body');
+        expect(comments.body).hasOwnProperty('article_id');
+      })
+    })
+  })
+  test('GET /api/articles/:article_id/comments responds with an empty array if no comments', () => {
+    return request(app)
+    .get('/api/articles/4/comments')
+    .expect(200)
+    .then((res) => {
+      expect(Array.isArray(res.body)).toBe(true)
+      expect(res.body.length).toBe(0)
+    })
+  })
+  test('GET /api/articles/:article_id/comments responds with a 404 when no article is found', () => {
+    return request(app)
+    .get('/api/articles/999/comments')
+    .expect(404).then((response) => {
+        expect(response.body.msg).toBe('ARTICLE DOES NOT EXIST!');
+      });
+    })
+    test('GET /api/articles/:article_id/comments returns 400 and error message when an invalid id type is inserted', () => {
+      return request(app)
+      .get('/api/articles/invalid/comments')
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe('INVALID INPUT')
+      })
+    })
+  })
