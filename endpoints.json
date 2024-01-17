@@ -25,5 +25,9 @@
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an object of an individual article from its article_id"
+
   }
 }
