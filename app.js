@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { getTopics, getEndPoints, getArticleID, articleCommentCount, getArticleComments, addComment, updateVotes} = require('./controllers/controller')
+const { getTopics, getEndPoints, getArticleID, articleCommentCount, getArticleComments, addComment, updateVotes, deleteComment} = require('./controllers/controller')
 
 app.use(express.json());
 
@@ -18,11 +18,13 @@ app.post('/api/articles/:article_id/comments', addComment)
 
 app.patch('/api/articles/:article_id', updateVotes) 
 
-app.all('*', (req, res) => {res.status(404).send({msg: 'URL not found'})})
+app.delete('/api/comments/:comment_id', deleteComment)
+
+app.all('*', (req, res) => {res.status(404).send({msg: 'URL NOT FOUND'})})
 
 app.use((err, req, res, next) => {
 
-    if (err.code === '22P02' || err.code === '42883'){
+    if (err.code === '22P02' || err.code === '42883' || err.code === '42703'){
         res.status(400).send({msg:'INVALID INPUT'})
     } else if (err.code === '23503' && err.detail.includes('Key (article_id)')){
         res.status(404).send({msg: 'ARTICLE DOES NOT EXIST!'})
