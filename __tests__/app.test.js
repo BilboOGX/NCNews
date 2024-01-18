@@ -221,3 +221,50 @@ describe('/api/articles/:article_id/comments', () => {
       })
     })
   })
+
+  describe('PATCH /api/articles/:article_id', () => {
+    test('PATCH /api/articles/:article_id returns a 200 status code ', () => {
+      return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1})
+      .expect(200)
+    })
+    test('PATCH /api/articles/:article_id returns the article object with an updated votes key when a positive int is used', () => {
+      return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: 1})
+      .expect(200)
+      .then((res) => {
+        expect(res.body).hasOwnProperty('votes')
+        expect(res.body.votes).toBe(101)
+      })
+    })
+    test('PATCH /api/articles/:article_id returns the article object with an updated votes key when a negative int is used', () => {
+      return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: -1})
+      .expect(200)
+      .then((res) => {
+        expect(res.body).hasOwnProperty('votes')
+        expect(res.body.votes).toBe(99)
+      })
+    })
+    test('PATCH /api/articles/:article_id returns 404 when no article is found', () => {
+      return request(app)
+      .patch('/api/articles/999')
+      .send({ inc_votes: -1})
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('ARTICLE DOES NOT EXIST!')
+      })
+    })
+    test('PATCH /api/articles/:article_id returns 400 when invalid data type used', () => {
+      return request(app)
+      .patch('/api/articles/1')
+      .send({ inc_votes: false})
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe('INVALID INPUT')
+      })
+    })
+  })

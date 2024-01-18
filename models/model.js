@@ -63,3 +63,17 @@ exports.addCommentBody = (article_id, comment) => {
     })
     
 }
+
+exports.incVotes = (article_id, incAmount) => {
+    let query = `
+    UPDATE articles
+    SET votes = votes + ${incAmount.inc_votes} 
+    WHERE article_id = ${article_id} 
+    returning *`
+    return db.query(query).then((rows) => {
+        if (rows.rowCount === 0) {
+            return Promise.reject({status: 404, msg: 'ARTICLE DOES NOT EXIST!'})
+        }
+        return rows.rows[0]
+    })
+}
