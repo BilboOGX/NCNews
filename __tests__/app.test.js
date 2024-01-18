@@ -185,3 +185,39 @@ describe('/api/articles/:article_id/comments', () => {
       })
     })
   })
+
+  describe('POST /api/articles/:article_id/comments', () => {
+    test('POST /api/articles/:article_id/comments returns an 201 status code ', () => {
+      return request(app)
+      .post('/api/articles/1/comments')
+      .send({username: 'butter_bridge', body: 'Hello There!'})
+      .expect(201)
+    })
+    test('POST /api/articles/:article_id/comments returns the posted comment', () => {
+      return request(app)
+      .post('/api/articles/1/comments')
+      .send({username: 'butter_bridge', body: 'Hello There!'})
+      .expect(201)
+      .then((res) => {
+        expect(res.text).toBe('Hello There!')
+      })
+    })
+    test('POST /api/articles/:article_id/comments returns a 404 error if an incorrect username is used', () => {
+      return request(app)
+      .post('/api/articles/1/comments')
+      .send({username: 'not_butter_bridge', body: 'Hello There!'})
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('NO USER-ID FOUND')
+      })
+    })
+    test('POST /api/articles/:article_id/comments returns a 404 error if article doesnt exist', () => {
+      return request(app)
+      .post('/api/articles/999/comments')
+      .send({username: 'butter_bridge', body: 'Hello There!'})
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('ARTICLE DOES NOT EXIST!')
+      })
+    })
+  })

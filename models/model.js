@@ -50,3 +50,16 @@ exports.sortComments = (article_id, sort_by = 'created_at', order = 'desc') => {
         })
     }
 
+exports.addCommentBody = (article_id, comment) => {
+    let query = `
+    INSERT INTO comments (article_id, author, body)
+    VALUES
+    ($1, $2, $3)
+    RETURNING *
+    `
+    
+    return db.query(query, [article_id, comment.username, comment.body]).then((rows) => {
+        return rows.rows[0]
+    })
+    
+}
