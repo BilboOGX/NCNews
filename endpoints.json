@@ -52,5 +52,8 @@
 
   "PATCH /api/articles/:article_id": {
     "description": "Responds with the updated votes property in the article object "
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "Deletes a comment matching the :comment_id and returns a 204 status code"
   }
 }

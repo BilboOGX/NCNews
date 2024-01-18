@@ -19,7 +19,7 @@ describe("GET api/topics", () => {
     return request(app)
     .get('/api/topicss')
     .expect(404).then((response) => {
-      expect(response.body.msg).toBe('URL not found');
+      expect(response.body.msg).toBe('URL NOT FOUND');
     });
   })
   test('Array of correct data is returned', () =>{
@@ -117,7 +117,7 @@ describe('/GET /api/articles', () => {
     return request(app)
     .get('/api/articless')
     .expect(404).then((response) => {
-      expect(response.body.msg).toBe('URL not found');
+      expect(response.body.msg).toBe('URL NOT FOUND');
     });
   })
   test('GET /api/articles to respond with an object containing a property with the total number of comments', () => {
@@ -237,6 +237,7 @@ describe('/api/articles/:article_id/comments', () => {
       .then((res) => {
         expect(res.body).hasOwnProperty('votes')
         expect(res.body.votes).toBe(101)
+        expect(res.body.article_id).toBe(1)
       })
     })
     test('PATCH /api/articles/:article_id returns the article object with an updated votes key when a negative int is used', () => {
@@ -265,6 +266,38 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe('INVALID INPUT')
+      })
+    })
+  })
+
+  describe('DELETE /api/comments/:comment_id', () => {
+    test('DELETE /api/comments/:comment_id returns a 204 status code ', () => {
+      return request(app)
+      .delete('/api/comments/1')
+      .expect(204)
+    })
+    test('Returns 404 when comment doesnt exist', () => {
+      return request(app)
+      .delete('/api/comments/999')
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('COMMENT DOES NOT EXIST!')
+      })
+    })
+    test('Returns 400 when invalid data type used', () => {
+      return request(app)
+      .delete('/api/comments/test')
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toBe('INVALID INPUT')
+      })
+    })
+    test('Returns 404 when incorrect url used', () => {
+      return request(app)
+      .delete('/api/cCComments/1')
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toBe('URL NOT FOUND')
       })
     })
   })

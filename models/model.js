@@ -77,3 +77,17 @@ exports.incVotes = (article_id, incAmount) => {
         return rows.rows[0]
     })
 }
+
+exports.removeComment = (comment_id) => {
+    let query = `
+    DELETE FROM comments
+    WHERE comment_id = ${comment_id}
+    RETURNING *`
+    return db.query(query).then((res) => {
+        console.log(res)
+        if (res.rows.length === 0) {
+        return Promise.reject({status: 404, msg: 'COMMENT DOES NOT EXIST!'})
+    }
+        return res.rows
+    })
+}
