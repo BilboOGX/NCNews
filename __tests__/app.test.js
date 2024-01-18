@@ -301,3 +301,30 @@ describe('/api/articles/:article_id/comments', () => {
       })
     })
   })
+
+  describe("GET api/users", () => {
+    test("GET /api/users should return status code 200", () => {
+      return request(app)
+      .get("/api/users")
+      .expect(200)
+    });
+    test('404 error when incorrect URL is used and message URL not found', () =>{
+      return request(app)
+      .get('/api/userss')
+      .expect(404).then((response) => {
+        expect(response.body.msg).toBe('URL NOT FOUND');
+      });
+    })
+    test('Array of correct data is returned', () =>{
+      return request(app)
+      .get('/api/users')
+      .expect(200)
+      .then((res) => {
+        res.body.forEach((user) => {
+          expect(user).hasOwnProperty("username");
+          expect(user).hasOwnProperty("name");
+          expect(user).hasOwnProperty("avatar_url");
+        })
+      })
+    })
+  });

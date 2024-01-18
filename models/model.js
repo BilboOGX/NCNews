@@ -91,3 +91,10 @@ exports.removeComment = (comment_id) => {
         return res.rows
     })
 }
+
+exports.fetchUsers = () => {
+    let query = 'SELECT * FROM users'
+    return db.query(query).then((rows) => {
+        return rows.rows
+    })
+}
