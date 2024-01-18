@@ -1,4 +1,4 @@
-const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody, incVotes, removeComment} = require('../models/model')
+const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody, incVotes, removeComment, fetchUsers} = require('../models/model')
 const {checkArticleExists} = require('../db/seeds/utils')
 const topics = require('../db/data/test-data/topics')
 const endpoints = require('../endpoints.json')
@@ -96,8 +96,16 @@ exports.deleteComment = (req, res, next) => {
         res.status(204).send(comment);
     })
     .catch((err) => {
-        console.log(err)
         next(err)
     })
+}
+
+exports.getUsers = (req, res, next) => {
+    fetchUsers().then((user) => {
+        res.status(200).send(user)    
+        })
+        .catch((err) => {
+            next(err)
+        }) 
 
 }
