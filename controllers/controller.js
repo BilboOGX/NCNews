@@ -1,4 +1,4 @@
-const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody} = require('../models/model')
+const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody, incVotes} = require('../models/model')
 const {checkArticleExists} = require('../db/seeds/utils')
 const topics = require('../db/data/test-data/topics')
 const endpoints = require('../endpoints.json')
@@ -68,6 +68,19 @@ exports.addComment = (req, res, next) => {
     addCommentBody(article_id, comment)
     .then((comment) => {
         res.status(201).send(comment.body)
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.updateVotes = (req, res, next) => {
+    const { article_id } = req.params
+    const incAmount = req.body
+
+    incVotes(article_id, incAmount)
+    .then((article) => {
+    res.status(200).send(article);
     })
     .catch((err) => {
         next(err)

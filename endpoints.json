@@ -46,7 +46,11 @@
       ]
     }
   },
-
   "POST /api/articles/:article_id/comments": {
     "description": "Responds with the posted comment"
-  }}
+  }, 
+
+  "PATCH /api/articles/:article_id": {
+    "description": "Responds with the updated votes property in the article object "
+  }
+}
