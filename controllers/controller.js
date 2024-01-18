@@ -1,4 +1,4 @@
-const { fetchTopics, getArticle, sortArticles, sortComments} = require('../models/model')
+const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody} = require('../models/model')
 const {checkArticleExists} = require('../db/seeds/utils')
 const topics = require('../db/data/test-data/topics')
 const endpoints = require('../endpoints.json')
@@ -59,3 +59,18 @@ exports.getArticleComments = (req, res, next) => {
         next(err)
     })
     }
+
+exports.addComment = (req, res, next) => {
+    const { article_id } = req.params
+    const comment = req.body
+    
+
+    addCommentBody(article_id, comment)
+    .then((comment) => {
+        res.status(201).send(comment.body)
+    })
+    .catch((err) => {
+        next(err)
+    })
+
+}
