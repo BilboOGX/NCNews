@@ -10,3 +10,4 @@ if (!process.env.PGDATABASE) {
 }
 
 module.exports = new Pool();
+ 
