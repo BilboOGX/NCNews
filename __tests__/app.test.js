@@ -86,6 +86,7 @@ describe('/GET /api/articles', () => {
     .expect(200)
     .then((res) => {
       expect(Array.isArray(res.body)).toBe(true)
+      console.log(res.body)
       res.body.forEach((article) => {
         expect(res.body.length > 0).toBe(true)
         expect(article.body).hasOwnProperty('author');
@@ -374,6 +375,40 @@ describe('/api/articles/:article_id/comments', () => {
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe('NOT A VALID TOPIC!')
+    })
+  })
+})
+
+describe('/api/articles/:article_id (comment count)', () => {
+  test('GET article_id returns an article object with the matching id and properties and a comment count property', () => {
+    return request(app)
+    .get('/api/articles/1')
+    .expect(200)
+    .then((res) => {
+      console.log(res.body)
+      expect(res.body.article).hasOwnProperty('number_of_comments')
+      expect(res.body.article.body).toBe("I find this existence challenging")
+      expect(res.body.article.topic).toBe("mitch")
+      expect(res.body.article.votes).toBe(100)
+      expect(res.body.article.author).toBe("butter_bridge")
+      expect(res.body.article.article_img_url).toBe("https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700")
+      expect(res.body.article.article_id).toBe(1)
+    })
+  })
+  test('GET returns 404 and ARTICLE DOES NOT EXIST! when a valid but non existent article id is inserted', () => {
+    return request(app)
+    .get('/api/articles/2000')
+    .expect(404)
+    .then((res) => {
+      expect(res.body.msg).toBe('ARTICLE DOES NOT EXIST!')
+    })
+  })
+  test('GET returns 400 and error message when an invalid id type is inserted', () => {
+    return request(app)
+    .get('/api/articles/invalid')
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toBe('INVALID INPUT')
     })
   })
 })
