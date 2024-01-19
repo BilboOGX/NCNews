@@ -10,7 +10,7 @@ exports.fetchTopics = () => {
         return rows.rows
     })
 }
-//HERE
+
 exports.getArticle = (article_id) => {
     return db.query(`
     SELECT articles.*,
