@@ -31,11 +31,11 @@ exports.getArticleID = (req, res, next) => {
 }
 
 exports.articleCommentCount = (req, res, next) => {
-    const { article_id } = req.params
     const { sort_by } = req.query
     const { order } = req.query
+    const { topic } = req.query
 
-    sortArticles(article_id, sort_by, order)
+    sortArticles(sort_by, order, topic)
     .then((article) => {
         res.status(200).send(article)
     })
