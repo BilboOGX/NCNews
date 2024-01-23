@@ -1,13 +1,13 @@
 const { fetchTopics, getArticle, sortArticles, sortComments, addCommentBody, incVotes, removeComment, fetchUsers} = require('../models/model')
 const {checkArticleExists} = require('../db/seeds/utils')
-const topics = require('../db/data/test-data/topics')
+const { topics } = require('../db/data/test-data/topics')
 const endpoints = require('../endpoints.json')
 const articles = require('../db/data/test-data/articles')
 const comments = require('../db/data/test-data/comments')
 
 exports.getTopics = (req, res, next) => {
     fetchTopics().then((topics) => {
-    res.status(200).send(topics)    
+    res.status(200).send({topics}) 
     })
     .catch((err) => {
         next(err)
@@ -15,7 +15,7 @@ exports.getTopics = (req, res, next) => {
 }
 
 exports.getEndPoints = (req, res, next) => {
-    res.status(200).send(endpoints)
+    res.status(200).send({endpoints})
 }
 
 exports.getArticleID = (req, res, next) => {
@@ -37,7 +37,8 @@ exports.articleCommentCount = (req, res, next) => {
 
     sortArticles(sort_by, order, topic)
     .then((article) => {
-        res.status(200).send(article)
+
+        res.status(200).send({article})
     })
     .catch((err) => {
         next(err)

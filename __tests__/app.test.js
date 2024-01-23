@@ -27,8 +27,9 @@ describe("GET api/topics", () => {
     .get('/api/topics')
     .expect(200)
     .then((res) => {
-      res.body.forEach((topic) => {
-        expect(res.body.length > 0).toBe(true)
+      const { topics } = res.body
+      expect(topics.length > 0).toBe(true)
+      topics.forEach((topic) => {
         expect(typeof topic.description).toBe("string");
         expect(typeof topic.slug).toBe("string");
       })
@@ -42,7 +43,7 @@ describe('/api', () => {
     .get('/api')
     .expect(200)
     .then((res) => {
-      expect(res.body).toEqual(endpointsTest)
+      expect(res.body.endpoints).toEqual(endpointsTest)
     })
   })
 })
@@ -85,18 +86,19 @@ describe('/GET /api/articles', () => {
     .get('/api/articles')
     .expect(200)
     .then((res) => {
-      expect(Array.isArray(res.body)).toBe(true)
-      console.log(res.body)
-      res.body.forEach((article) => {
-        expect(res.body.length > 0).toBe(true)
-        expect(article.body).hasOwnProperty('author');
-        expect(article.body).hasOwnProperty('title');
-        expect(article.body).hasOwnProperty('article_id');
-        expect(article.body).hasOwnProperty('topic');
-        expect(article.body).hasOwnProperty('created_at');
-        expect(article.body).hasOwnProperty('votes');
-        expect(article.body).hasOwnProperty('article_img_url');
-        expect(article.body).not.hasOwnProperty('body')
+      expect(Array.isArray(res.body.article)).toBe(true)
+      expect(res.body.article.length > 0).toBe(true)
+      res.body.article.forEach((article) => {
+        expect(article).hasOwnProperty('author');
+        expect(article).hasOwnProperty('title');
+        expect(article).hasOwnProperty('article_id');
+        expect(article).hasOwnProperty('topic');
+        expect(article).hasOwnProperty('created_at');
+        expect(article).hasOwnProperty('votes');
+        expect(article).hasOwnProperty('article_img_url');
+        expect(article).not.hasOwnProperty('body')
+        expect(article).hasOwnProperty('number_of_comments')
+        expect(typeof article.number_of_comments).toBe('string')
       })
     })
   })
@@ -105,7 +107,7 @@ describe('/GET /api/articles', () => {
     .get('/api/articles')
     .expect(200)
     .then((res) => {
-      expect(res.body).toBeSortedBy('created_at', {descending: true})
+      expect(res.body.article).toBeSortedBy('created_at', {descending: true})
     })
   })
   test('GET /api/articles to respond true when the properties are sorted by date in descending order and tested against ascending order', () => {
@@ -113,7 +115,7 @@ describe('/GET /api/articles', () => {
     .get('/api/articles')
     .expect(200)
     .then((res) => {
-      expect(res.body).not.toBeSortedBy('created_at', {ascending: true})
+      expect(res.body.article).not.toBeSortedBy('created_at', {ascending: true})
     })
   })
   test('404 error when incorrect URL is used and message URL not found', () =>{
@@ -122,27 +124,6 @@ describe('/GET /api/articles', () => {
     .expect(404).then((response) => {
       expect(response.body.msg).toBe('URL NOT FOUND');
     });
-  })
-  test('GET /api/articles to respond with an object containing a property with the total number of comments', () => {
-    return request(app)
-    .get('/api/articles')
-    .expect(200)
-    .then((res) => {
-      expect(Array.isArray(res.body)).toBe(true)
-      res.body.forEach((article) => {
-        expect(res.body.length > 0).toBe(true)
-        expect(article.body).hasOwnProperty('author');
-        expect(article.body).hasOwnProperty('title');
-        expect(article.body).hasOwnProperty('article_id');
-        expect(article.body).hasOwnProperty('topic');
-        expect(article.body).hasOwnProperty('created_at');
-        expect(article.body).hasOwnProperty('votes');
-        expect(article.body).hasOwnProperty('article_img_url');
-        expect(article.body).not.hasOwnProperty('body')
-        expect(article.body).hasOwnProperty('number_of_comments')
-        expect(typeof article.number_of_comments).toBe('string')
-      })
-    })
   })
 })
 
@@ -153,9 +134,12 @@ describe('/api/articles/:article_id/comments', () => {
     .expect(200)
     .then((res) => {
       expect(Array.isArray(res.body)).toBe(true)
-      expect(res.body.length).not.toBe(0)
+      expect(res.body.length).toBe(11)
+      expect(res.body[0].comment_id).toBe(5)
+      expect(res.body[0].votes).toBe(0)
+      expect(res.body[0].created_at).toBe('2020-11-03T21:00:00.000Z')
+      expect(res.body[0].body).toBe('I hate streaming noses')
       res.body.forEach((comments) => {
-        expect(res.body.length > 0).toBe(true)
         expect(comments.body).hasOwnProperty('comment_id');
         expect(comments.body).hasOwnProperty('votes');
         expect(comments.body).hasOwnProperty('created_at');
@@ -204,7 +188,14 @@ describe('/api/articles/:article_id/comments', () => {
       .send({username: 'butter_bridge', body: 'Hello There!'})
       .expect(201)
       .then((res) => {
-        expect(res.text).toBe('Hello There!')
+        expect(res.request._data).hasOwnProperty(res.request._data.username)
+        expect(res.request._data).hasOwnProperty(res.request._data.body)
+        expect(res.request._data).not.hasOwnProperty(res.request._data.votes)
+        expect(res.request._data).not.hasOwnProperty(res.request._data.article_id)
+        expect(res.request._data).not.hasOwnProperty(res.request._data.created_at)
+        expect(res.request._data.username).toBe('butter_bridge')
+        expect(res.request._data.body).toBe('Hello There!')
+
       })
     })
     test('POST /api/articles/:article_id/comments returns a 404 error if an incorrect username is used', () => {
@@ -253,6 +244,7 @@ describe('/api/articles/:article_id/comments', () => {
       .then((res) => {
         expect(res.body).hasOwnProperty('votes')
         expect(res.body.votes).toBe(99)
+        expect(res.body.article_id).toBe(1)
       })
     })
     test('PATCH /api/articles/:article_id returns 404 when no article is found', () => {
@@ -325,8 +317,8 @@ describe('/api/articles/:article_id/comments', () => {
       .get('/api/users')
       .expect(200)
       .then((res) => {
+        expect(res.body.length > 0).toBe(true)
         res.body.forEach((user) => {
-          expect(res.body.length > 0).toBe(true)
           expect(user).hasOwnProperty("username");
           expect(user).hasOwnProperty("name");
           expect(user).hasOwnProperty("avatar_url");
@@ -338,13 +330,12 @@ describe('/api/articles/:article_id/comments', () => {
   describe('GET /api/articles (topic query)', () => {
     test('Returns an array of article objects with only the topics of mitch',() => {
       return request(app)
-      .get('/api/articles/?topic=mitch')
+      .get('/api/articles?topic=mitch')
       .expect(200)
       .then((res) => {
-        expect(Array.isArray(res.body)).toBe(true)
-        expect(res.body.length).toBe(12)
-        res.body.forEach((article) => {
-          expect(res.body.length > 0).toBe(true)
+        expect(Array.isArray(res.body.article)).toBe(true)
+        expect(res.body.article.length).toBe(12)
+        res.body.article.forEach((article) => {
           expect(article.topic).toBe('mitch');
         })
       })
@@ -354,24 +345,24 @@ describe('/api/articles/:article_id/comments', () => {
       .get('/api/articles/')
       .expect(200)
       .then((res) => {
-        res.body.forEach((user) => {
-          expect(res.body.length > 0).toBe(true)
+        expect(res.body.article.length > 0).toBe(true)
+        res.body.article.forEach((user) => {
           expect(user.topic).toMatch(/mitch|cats/) 
         })
       })  
     })
     test('returns an empty array when a valid topic is used but the topic isnt found on any article', () => {
       return request(app)
-      .get('/api/articles/?topic=paper')
+      .get('/api/articles?topic=paper')
       .expect(200)
       .then((res) => {
-        expect(res.body.length).toBe(0)
+        expect(res.body.article.length).toBe(0)
 
       })
     })
     test('returns an 400 when an invalid topic is used', () => {
       return request(app)
-      .get('/api/articles/?topic=dogs')
+      .get('/api/articles?topic=dogs')
       .expect(400)
       .then((res) => {
         expect(res.body.msg).toBe('NOT A VALID TOPIC!')
@@ -385,7 +376,6 @@ describe('/api/articles/:article_id (comment count)', () => {
     .get('/api/articles/1')
     .expect(200)
     .then((res) => {
-      console.log(res.body)
       expect(res.body.article).hasOwnProperty('number_of_comments')
       expect(res.body.article.body).toBe("I find this existence challenging")
       expect(res.body.article.topic).toBe("mitch")
