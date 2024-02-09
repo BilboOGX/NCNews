@@ -29,7 +29,7 @@ exports.getArticle = (article_id) => {
 
 exports.sortArticles = (sort_by = 'created_at', order = 'desc', topic = '') => {
 
-    const validQuery = ['mitch', 'cats', 'paper', '']
+    const validQuery = ['mitch', 'cats', 'paper', 'football', 'coding' , 'cooking', '']
     if (!validQuery.includes(topic)) {
         return Promise.reject({status: 400, msg: "NOT A VALID TOPIC!" })
       }
